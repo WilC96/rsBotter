@@ -573,33 +573,4 @@ class fishInterpolation implements Runnable {
 			canInteract = true;
 		}
 	}
-
-
-public final class Sleep extends ConditionalSleep {
-
-    private final BooleanSupplier condition;
-
-    public Sleep(final BooleanSupplier condition, final int timeout) {
-        super(timeout);
-        this.condition = condition;
-    }
-
-    public Sleep(final BooleanSupplier condition, final int timeout, final int interval) {
-        super(timeout, interval);
-        this.condition = condition;
-    }
-
-    @Override
-    public final boolean condition() throws InterruptedException {
-        return condition.getAsBoolean();
-    }
-
-    public boolean sleepUntil(final BooleanSupplier condition, final int timeout) {
-        return new Sleep(condition, timeout).sleep();
-    }
-
-    public boolean sleepUntil(final BooleanSupplier condition, final int timeout, final int interval) {
-        return new Sleep(condition, timeout, interval).sleep();
-    }
-}
 }

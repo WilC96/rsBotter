@@ -1,4 +1,4 @@
-package klobWebPack;
+package com.fishing.com.fishing;
 
 import java.awt.Color;
 import java.awt.Graphics2D;

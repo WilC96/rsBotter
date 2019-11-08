@@ -6,7 +6,6 @@ import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BooleanSupplier;
 
 import org.osbot.rs07.api.map.Area;
 import org.osbot.rs07.api.map.Position;
@@ -67,8 +66,8 @@ public class LobsterWebWalk extends Script {
 	}
 
 	private enum karamFishing {
-		smallNetFishing(new String[] { "Small fishing net", "Coins" }, "Net", 1521, 621),
-		baitFishing(new String[] { "Fishing rod", "Fishing bait", "Coins" }, "Bait", 1521, 623),
+		smallNetFishing(new String[] { "Small fishing net", "Coins" }, "Net", 1521, 621), 
+		baitFishing(new String[] { "Fishing rod", "Fishing bait", "Coins" }, "Bait", 1521, 623), 
 		cageFishing(new String[] { "Lobster pot", "Coins" }, "Cage", 1522, 619);
 
 		private final String[] tool;
@@ -159,8 +158,8 @@ public class LobsterWebWalk extends Script {
 			/*
 			 * new ConditionalSleep(1500, (int) (Math.random() * 500 + 250)) {
 			 * 
-			 * @Override public boolean condition() throws InterruptedException { return
-			 * KaramFishingSpot.contains(myPosition()); } }.sleep();
+			 * @Override public boolean condition() throws InterruptedException
+			 * { return KaramFishingSpot.contains(myPosition()); } }.sleep();
 			 */
 			Sleep.sleepUntil(() -> KaramFishingSpot.contains(myPosition()), (int) (Math.random() * 500 + 250));
 		}
@@ -286,7 +285,8 @@ public class LobsterWebWalk extends Script {
 		}
 	}
 
-	// ============================================= Grabbing the necessary items
+	// ============================================= Grabbing the necessary
+	// items
 	private void getNecessities() throws InterruptedException {
 		checkAtBank();
 		if (DraynorBank.contains(this.myPosition())) {
@@ -491,7 +491,8 @@ public class LobsterWebWalk extends Script {
 		return fishingSpot;
 	}
 
-	// ============================================= Something's wrong. Exit game :(
+	// ============================================= Something's wrong. Exit
+	// game :(
 	private void exitGame() {
 		logoutTab.logOut();
 	}

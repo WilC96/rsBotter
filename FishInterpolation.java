@@ -19,7 +19,7 @@ public class FishInterpolation {
 				try {
 					Thread.sleep(randomTimer);
 				} catch (InterruptedException e) {
-					System.out.println("This line will never run..." + e);
+					System.out.println("This shouldn't have happened..." + e);
 				}
 			}
 			canInteract = false;
@@ -27,7 +27,7 @@ public class FishInterpolation {
 			try {
 				Thread.sleep(delayTimer);
 			} catch (InterruptedException e) {
-				System.out.println("This line will never run..." + e);
+				System.out.println("This shouldn't have happened..." + e);
 			}
 			canInteract = true;
 		}

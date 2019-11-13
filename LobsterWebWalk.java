@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.osbot.rs07.api.map.Area;
 import org.osbot.rs07.api.map.Position;
@@ -18,7 +19,6 @@ import org.osbot.rs07.api.model.RS2Object;
 import org.osbot.rs07.api.ui.Skill;
 import org.osbot.rs07.script.Script;
 import org.osbot.rs07.script.ScriptManifest;
-import org.osbot.rs07.utility.ConditionalSleep;
 
 @ScriptManifest(author = "Glaciation96", info = "SecondAttempt", name = "KlobsterWebWalk", version = 0, logo = "")
 
@@ -60,6 +60,9 @@ public class LobsterWebWalk extends Script {
 	long currentlyIdledFor, lastActionTime;
 
 	public final String[] goods = { "Raw lobster", "Raw swordfish", "Lobster", "Swordfish" };
+	
+	Stream<String> goods2 = Stream.of("Raw lobster", "Raw swordfish", "Lobster", "Swordfish");
+	
 	public final String[] trash = { "Raw sardine", "Raw herring", "Raw shrimps", "Raw anchovies" };
 	public final String[] SeamenOption = { "Yes please." };
 	public final String[] CustomsOptions = { "Can I journey on this ship?", "Search away, I have nothing to hide.",
@@ -161,19 +164,21 @@ public class LobsterWebWalk extends Script {
 	}
 
 	// ============================================= Fishing begins!!!
+	private boolean freeFish(GroundItem fish) {	
+		return getMap().canReach(fish) && fish != null && levelFishType == KaramFishing.CAGE;
+	}
+	
 	private void beginFishing() throws InterruptedException {
-		log("beginFishing() - Attempting to check if fish exists.");
-		GroundItem freeFish = getGroundItems().closest(goods);
-		if (freeFish != null && !this.inventory.isFull() && levelFishType == KaramFishing.CAGE) {
-			log("beginFishing() - Fish exists, proceeding to pick up...");
-			if (getMap().canReach(freeFish)) {
-				int lastCount = getInventory().getEmptySlots();
-				freeFish.interact("Take");
-				Sleep.sleepUntil(() -> getInventory().getEmptySlots() < lastCount || idleFor(random(2500, 5000)), 
-						(int) (Math.random() * 500 + 150));
-					
-			}
-		} else if (!this.inventory.isFull() && !myPlayer().isAnimating()) {
+		log("beginFishing() - Attempting to check if there are any free fish.");
+		
+		if (freeFish(getGroundItems().closest(goods))) {
+			int lastCount = getInventory().getEmptySlots();
+			getGroundItems().closest(goods).interact("Take");
+			Sleep.sleepUntil(() -> getInventory().getEmptySlots() < lastCount || idleFor(random(2500, 5000)), 
+					(int) (Math.random() * 500 + 150));
+		}
+		
+		else if (!this.inventory.isFull() && !myPlayer().isAnimating()) {
 			if (FishInterpolation.canInteract) {
 				log("beginFishing() - We are fishing!");
 				

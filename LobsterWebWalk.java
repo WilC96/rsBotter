@@ -25,7 +25,7 @@ import org.osbot.rs07.script.ScriptManifest;
 public class LobsterWebWalk extends Script {
 
 	private FishInterpolation fishDelay = new FishInterpolation(random(20, 30), random(1800, 2300));
-	
+
 	// Places of interest for the bot to go
 	public final Area KaramFishingSpot = new Area(2921, 3174, 2927, 3180);
 	public final Area KaramHarbour = new Area(2950, 3147, 2957, 3146);
@@ -60,9 +60,6 @@ public class LobsterWebWalk extends Script {
 	long currentlyIdledFor, lastActionTime;
 
 	public final String[] goods = { "Raw lobster", "Raw swordfish", "Lobster", "Swordfish" };
-	
-	Stream<String> goods2 = Stream.of("Raw lobster", "Raw swordfish", "Lobster", "Swordfish");
-	
 	public final String[] trash = { "Raw sardine", "Raw herring", "Raw shrimps", "Raw anchovies" };
 	public final String[] SeamenOption = { "Yes please." };
 	public final String[] CustomsOptions = { "Can I journey on this ship?", "Search away, I have nothing to hide.",
@@ -79,9 +76,9 @@ public class LobsterWebWalk extends Script {
 	public int onLoop() throws InterruptedException {
 		// Check our fishing level at each iteration
 		fishingType();
-		
+
 		// Check for equipment depending on what we are fishing
-		if (!doWeHaveEverythingYet()) { 
+		if (!doWeHaveEverythingYet()) {
 			getNecessities();
 		}
 		if (getInventory().getAmount("Coins") <= 60) {
@@ -97,7 +94,7 @@ public class LobsterWebWalk extends Script {
 				switch (getFishState()) {
 				case FISH:
 					beginFishing();
-					Sleep.sleepUntil(() -> !myPlayer().isAnimating(), (int) (Math.random() * 500 + 150));		
+					Sleep.sleepUntil(() -> !myPlayer().isAnimating(), (int) (Math.random() * 500 + 150));
 					break;
 				case TRASHFULL:
 					dropTrash();
@@ -120,7 +117,8 @@ public class LobsterWebWalk extends Script {
 			 * { return KaramFishingSpot.contains(myPosition()); } }.sleep();
 			 */
 			Sleep.sleepUntil(() -> KaramFishingSpot.contains(myPosition()), (int) (Math.random() * 500 + 150));
-			// Change up the anonymous classes to lambdas using our Sleep class with BooleanSupplier
+			// Change up the anonymous classes to lambdas using our Sleep class
+			// with BooleanSupplier
 		}
 		log("We broke out the switch! Looping again...");
 		return random(200, 300);
@@ -153,7 +151,8 @@ public class LobsterWebWalk extends Script {
 		if (!getInventory().isFull() && this.myPlayer().getAnimation() == -1) {
 			return FishState.FISH;
 		} else if (levelFishType.getFishingAnim() == this.myPlayer().getAnimation()) {
-			return FishState.FISH;
+			return FishState.FISH; // Infinite loop to check for free fish in
+									// real time
 		} else if (getInventory().isFull() && levelFishType == KaramFishing.CAGE) {
 			return FishState.LOBSFULL;
 		} else if (getInventory().isFull() && levelFishType != KaramFishing.CAGE) {
@@ -164,27 +163,28 @@ public class LobsterWebWalk extends Script {
 	}
 
 	// ============================================= Fishing begins!!!
-	private boolean freeFish(GroundItem fish) {	
+	private boolean freeFish(GroundItem fish) {
 		return getMap().canReach(fish) && fish != null && levelFishType == KaramFishing.CAGE;
 	}
-	
+
 	private void beginFishing() throws InterruptedException {
 		log("beginFishing() - Attempting to check if there are any free fish.");
-		
+
 		if (freeFish(getGroundItems().closest(goods))) {
 			int lastCount = getInventory().getEmptySlots();
 			getGroundItems().closest(goods).interact("Take");
-			Sleep.sleepUntil(() -> getInventory().getEmptySlots() < lastCount || idleFor(random(2500, 5000)), 
+			Sleep.sleepUntil(() -> getInventory().getEmptySlots() < lastCount || idleFor(random(2500, 5000)),
 					(int) (Math.random() * 500 + 150));
 		}
-		
+
 		else if (!this.inventory.isFull() && !myPlayer().isAnimating()) {
 			if (FishInterpolation.canInteract) {
 				log("beginFishing() - We are fishing!");
-				
-				NPC fishingSpot = fishingSpot(levelFishType.getFishingSpot()); 
-				//Finds us the current closest fishing spot according to KaramFishings character check
-				
+
+				NPC fishingSpot = fishingSpot(levelFishType.getFishingSpot());
+				// Finds us the current closest fishing spot according to
+				// KaramFishings character check
+
 				engageFishing(fishingSpot, levelFishType.getAction());
 				hasInteracted = true;
 				sleep(random(35, 50));
@@ -211,16 +211,16 @@ public class LobsterWebWalk extends Script {
 				fishingSpot.interact(action);
 			}
 			break;
-		default: // Should not get called
+		default:
 			fishingSpot.interact(action);
 		}
 	}
 
 	// ============================================= Randomised drop pattern
 	private void dropTrash() throws InterruptedException {
-		List<Integer> invSlots = Arrays.asList( 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
-				25, 26, 27 );
-		
+		List<Integer> invSlots = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+				21, 22, 23, 24, 25, 26, 27);
+
 		// Randomised dropping sequence - needs improvement
 		Collections.shuffle(invSlots);
 
@@ -229,7 +229,7 @@ public class LobsterWebWalk extends Script {
 			Item item = getInventory().getItemInSlot(invSlots.get(i));
 			if (item != null && item.nameContains(trash)) {
 				getInventory().interact(invSlots.get(i));
-				
+
 				// Conditional sleep not required
 				sleep(random(20, 30));
 			}
@@ -239,93 +239,120 @@ public class LobsterWebWalk extends Script {
 		breakFishing = true;
 	}
 
-
-	// ============================================= Grabbing the necessary
-	// items
+	// ============================================= Grabbing necessities
 	private void getNecessities() throws InterruptedException {
-		checkAtBank();
-		if (DraynorBank.contains(this.myPosition())) {
-			log("getNecessities - At Draynor bank");
-			if (!getBank().isOpen()) {
-				while (!getBank().isOpen()) {
-					openBank();
-				}
-			}
-			if (getBank().isOpen()) {
-				if (getInventory().getEmptySlots() <= 27) {
-					log("getNecessities - Inventory contains less than or equal to 27 free slots");
-					if (getInventory().contains("Coins")) {
-						log("getNecessities - Inventory has coins");
-						int lastCount = getInventory().getEmptySlots();
-						bank.depositAllExcept("Coins");
-						Sleep.sleepUntil(() -> getInventory().getEmptySlots() > lastCount, (int) (Math.random() * 500 + 150));
-						
-					} else {
-						bank.depositAll();
-						Sleep.sleepUntil(() -> getInventory().getEmptySlots() == 28, (int) (Math.random() * 500 + 150));
-						
-						bank.withdrawAll("Coins");
-						Sleep.sleepUntil(() -> getInventory().getEmptySlots() == 27, (int) (Math.random() * 500 + 150));
-					}
-				}
-				log("getNecessities - Checking if 'levelFishType.getTool()' exists in bank...");
-				if (getBank().contains(levelFishType.getTool())) {
-					bank.withdraw(levelFishType.getTool()[0], 1);
-					Sleep.sleepUntil(() -> inventory.contains(levelFishType.getTool()[0]), (int) (Math.random() * 500 + 150));
-					
-				} else {
-					log("getNecessities - 'levelFishType.getTool()' does not exist in bank, logging out");
-					exitGame();
-				}
-			}
-			if (levelFishType.getTool().length > 2) {
-				log("getNecessities - karamFishing.baitFishing checked, withdrawing Fishing bait");
-				if (!getBank().isOpen()) {
-					while (!getBank().isOpen()) {
-						openBank();
-					}
-				}
-				if (getBank().contains(levelFishType.getTool()[1])) {
-					getBank().withdrawAll(levelFishType.getTool()[1]);
-					Sleep.sleepUntil(() -> inventory.contains(levelFishType.getTool()[1]), (int) (Math.random() * 500 + 150));
-							
-				} else {
-					log("getNecessities - Fishing bait does not exist in bank, logging out");
-					exitGame();
-				}
-			}
-			if (!KaramFishingSpot.contains(myPosition())) {
-				log("getNecessities - Attempting to close bank and return to fishing spot...");
-				while (getBank().isOpen()) {
-					getBank().close();
-				}
-				this.walking.webWalk(KaramFishingSpot);
-				Sleep.sleepUntil(() -> KaramFishingSpot.contains(myPosition()), (int) (Math.random() * 500 + 150));
-				
-			}
+		if (!checkAtBank()) {
+			this.walking.webWalk(DraynorBank);
+			Sleep.sleepUntil(this::checkAtBank, (int) (Math.random() * 500 + 150));
 		}
+
+		log("getNecessities - At Draynor bank");
+		if (!getBank().isOpen())
+			openBank();
+
+		if (!getInventory().isEmpty() && getBank().depositAll()) {
+			log("getNecessities - Inventory contains items so deposit them all");
+			Sleep.sleepUntil(() -> getInventory().getEmptySlots() == 28, (int) (Math.random() * 500 + 150));
+
+		}
+		withdrawMoney(); // Get that money!
+		withdrawTools(); // Get them tools!
+	}
+
+	// ============================================= Check for coins in bank
+	// (reusable)
+	public void withdrawMoney() {
+
+		// Stream bank items for coins if we have any or else exit the game
+		Item needMoney = Stream.of(bank.getItems()).filter(this::isMoney).findFirst().orElse(null);
+
+		if (needMoney != null) {
+			getBank().withdrawAll("Coins");
+			Sleep.sleepUntil(() -> getInventory().contains("Coins"), (int) (Math.random() * 500 + 150));
+		} else
+			exitGame(); // No money so exit game
+	}
+
+	public boolean isMoney(Item item) {
+		return item.getName().contains("Coins");
+	}
+
+	// ============================================= Check for tools in bank
+	public void withdrawTools() {
+
+		// Check for tools availability
+		List<String> myTools = new ArrayList<>();
+
+		// We don't want to include the coins at the end of array
+		for (int i = 0; i < levelFishType.getTool().length - 1; i++) {
+
+			if (bank.contains(levelFishType.getTool()[i]))
+				myTools.add(levelFishType.getTool()[i]);
+			else
+				exitGame(); // Missing required tools so exit game
+		}
+
+		myTools.forEach(item -> {
+			bank.withdraw(item, 1);
+			Sleep.sleepUntil(() -> getInventory().contains(item), (int) (Math.random() * 500 + 150));
+		});
 	}
 
 	// ============================================= Check if we are at the bank
-	private void checkAtBank() {
-		if (!DraynorBank.contains(this.myPosition())) {
-			log("checkAtBank - Attempting to walk to Draynor bank");
-			this.walking.webWalk(DraynorBank);
-			Sleep.sleepUntil(() -> DraynorBank.contains(myPosition()), (int) (Math.random() * 500 + 150));	
+	private boolean checkAtBank() {
+		return DraynorBank.contains(this.myPosition());
+	}
+
+	// ============================================= Open bank with sleep to
+	// avoid spam clicking
+	private void openBank() throws InterruptedException {
+		if (getBank().open())
+			Sleep.sleepUntil(() -> getBank().isOpen(), (int) (Math.random() * 500 + 150));
+	}
+
+	// ============================================= Depositing at deposit box
+	private void doDeposit() {
+		if (!DepositBox.contains(this.myPosition())) {
+			this.walking.webWalk(DepositBox);
+			Sleep.sleepUntil(() -> b4DepositBox.contains(myPosition()), (int) (Math.random() * 500 + 150));
+
+		}
+		log("doDeposit - Searching for Deposit Box...");
+		while (!this.depositBox.isOpen()) {
+			RS2Object Dbox = getObjects().closest("Bank deposit box");
+			if (Dbox != null && Dbox.exists()) {
+				Dbox.interact("Deposit");
+				Sleep.sleepUntil(() -> depositBox.isOpen(), (int) (Math.random() * 500 + 150));
+
+			}
+		}
+		log("Attempting to deposit goods...");
+		if (this.depositBox.isOpen() && getInventory().isFull()) {
+			this.depositBox.depositAllExcept(levelFishType.getTool());
+			Sleep.sleepUntil(() -> inventory.isEmptyExcept(levelFishType.getTool()), (int) (Math.random() * 500 + 150));
+
+			this.depositBox.close();
 		}
 	}
 
+	// ============================================= Create fishing spot to call
+	private NPC fishingSpot(int id) {
+		// NPC fishingSpot = this.npcs.closest(id);
+		NPC fishingSpot = getNpcs().closest(id);
+		return fishingSpot;
+	}
+
 	// ============================================= MONEY MAY ALL DAY
-	private boolean moneyMoneyMoneyTeeeam() {
+	private boolean moneyMoneyMoneyTeeeam() throws InterruptedException {
 		if (getInventory().getAmount("Coins") < 60) {
 			if (DraynorBank.contains(this.myPosition())) {
-				while (!getBank().isOpen()) {
+				if (!getBank().isOpen()) {
 					openBank();
 				}
 				if (getBank().isOpen()) {
 					getBank().withdrawAll("Coins");
 					Sleep.sleepUntil(() -> getInventory().getAmount("Coins") > 60, (int) (Math.random() * 500 + 150));
-					
+
 				}
 			} else {
 				checkAtBank();
@@ -335,57 +362,6 @@ public class LobsterWebWalk extends Script {
 		return isPoor = false;
 	}
 
-	// ============================================= Open bank
-	private boolean openBank() {
-		if (!getBank().isOpen()) {
-			log("Attempting to open bank");
-			RS2Object bankBooth = this.getObjects().closest("Bank booth");
-			if (bankBooth != null && bankBooth.exists()) {
-				bankBooth.interact("Bank");
-				Sleep.sleepUntil(() -> getBank().isOpen(), (int) (Math.random() * 500 + 150));
-						
-			} else {
-				log("We are not at bank, attempting to reach destination");
-				this.walking.webWalk(DraynorBank);
-				Sleep.sleepUntil(() -> DraynorBank.contains(myPosition()), (int) (Math.random() * 500 + 150));
-
-				return !getBank().isOpen();
-			}
-		}
-		return getBank().isOpen();
-	}
-
-	// ============================================= Depositing at deposit box
-	private void doDeposit() {
-		if (!DepositBox.contains(this.myPosition())) {
-			this.walking.webWalk(DepositBox);
-			Sleep.sleepUntil(() -> b4DepositBox.contains(myPosition()), (int) (Math.random() * 500 + 150));
-					
-		}
-		log("doDeposit - Searching for Deposit Box...");
-		while (!this.depositBox.isOpen()) {
-			RS2Object Dbox = getObjects().closest("Bank deposit box");
-			if (Dbox != null && Dbox.exists()) {
-				Dbox.interact("Deposit");
-				Sleep.sleepUntil(() -> depositBox.isOpen(), (int) (Math.random() * 500 + 150));
-						
-			}
-		}
-		log("Attempting to deposit goods...");
-		if (this.depositBox.isOpen() && getInventory().isFull()) {
-			this.depositBox.depositAllExcept(levelFishType.getTool());
-			Sleep.sleepUntil(() -> inventory.isEmptyExcept(levelFishType.getTool()), (int) (Math.random() * 500 + 150));
-					
-			this.depositBox.close();
-		}
-	}
-
-	// ============================================= Create fishing spot to call
-	private NPC fishingSpot(int s) {
-		NPC fishingSpot = this.npcs.closest(s);
-		return fishingSpot;
-	}
-	
 	// ============================================= Check idle time
 	private boolean idleFor(int millis) {
 		if (myPlayer().isAnimating() || myPlayer().isMoving()) {
@@ -396,8 +372,7 @@ public class LobsterWebWalk extends Script {
 		return lastActionTime + millis < currentlyIdledFor;
 	}
 
-	// ============================================= Something's wrong. Exit
-	// game :(
+	// ============================================= We messed up, exit game
 	private void exitGame() {
 		logoutTab.logOut();
 	}

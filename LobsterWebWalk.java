@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import org.osbot.rs07.api.map.Area;
-import org.osbot.rs07.api.map.Position;
 import org.osbot.rs07.api.model.GroundItem;
 import org.osbot.rs07.api.model.Item;
 import org.osbot.rs07.api.model.NPC;
@@ -35,24 +34,6 @@ public class LobsterWebWalk extends Script {
 	public final Area karamBoat = new Area(2955, 3141, 2957, 3144).setPlane(1);
 	public final Area sarimBoat = new Area(3038, 3210, 3031, 3223).setPlane(1);
 	public final Area DraynorBank = new Area(3092, 3246, 3096, 3241);
-
-	// Custom list of walk path not yet in use
-	List<Position> myPositionName = new ArrayList<>();
-	Position[] lobToKaramHarbour = { new Position(2922, 3172, 0), new Position(2919, 3168, 0),
-			new Position(2916, 3163, 0), new Position(2916, 3153, 0), new Position(2922, 3151, 0),
-			new Position(2930, 3149, 0), new Position(2939, 3146, 0), new Position(2947, 3146, 0),
-			new Position(2954, 3147, 0) };
-	Position[] SarimHtoDbox = { new Position(3028, 3220, 0), new Position(3027, 3227, 1), new Position(3028, 3230, 1),
-			new Position(3028, 3236, 1), new Position(3032, 3235, 1), new Position(3038, 3236, 1),
-			new Position(3044, 3235, 1), new Position(3048, 3235, 1) };
-	Position[] DboxToSarimH = { new Position(3044, 3235, 0), new Position(3040, 3235, 1), new Position(3037, 3236, 1),
-			new Position(3033, 3235, 1), new Position(3029, 3236, 1), new Position(3027, 3232, 1),
-			new Position(3028, 3228, 1), new Position(3027, 3223, 1), new Position(3027, 3218, 1) };
-	Position[] KarimHtoLobs = { new Position(2955, 3147, 0), new Position(2951, 3146, 1), new Position(2947, 3147, 1),
-			new Position(2943, 3145, 1), new Position(2939, 3145, 1), new Position(2934, 3148, 1),
-			new Position(2929, 3151, 1), new Position(2924, 3151, 1), new Position(2919, 3152, 1),
-			new Position(2915, 3153, 1), new Position(2917, 3156, 1), new Position(2920, 3161, 1),
-			new Position(2923, 3165, 1), new Position(2924, 3170, 1), new Position(2924, 3174, 1) };
 
 	private KaramFishing levelFishType;
 	volatile static boolean hasInteracted = false;

@@ -1,4 +1,4 @@
-package com.swagFishing;
+package com.fishing;
 
 import java.awt.Color;
 import java.awt.Graphics2D;

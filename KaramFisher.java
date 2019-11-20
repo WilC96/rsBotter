@@ -49,7 +49,7 @@ public class KaramFisher extends Script {
 	@Override
 	public void onStart() {
 		log("Let's get glitched out!");
-		new Thread((Runnable) fishDelay).start();
+		new Thread(fishDelay).start();
 	}
 
 	// ============================================= onLoop

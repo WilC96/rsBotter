@@ -35,7 +35,7 @@ public class LobsterWebWalk extends Script {
 	public final Area sarimBoat = new Area(3038, 3210, 3031, 3223).setPlane(1);
 	public final Area DraynorBank = new Area(3092, 3246, 3096, 3241);
 
-	private KaramFishing levelFishType;
+	private PlayerState levelFishType;
 	volatile static boolean hasInteracted = false;
 	boolean breakFishing = false, isPoor = false;
 	long currentlyIdledFor, lastActionTime;

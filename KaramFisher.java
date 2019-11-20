@@ -1,4 +1,4 @@
-package com.fishing;
+package com.swagFishing;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -21,7 +21,7 @@ import org.osbot.rs07.script.ScriptManifest;
 
 @ScriptManifest(author = "Glaciation96", info = "SecondAttempt", name = "KlobsterWebWalk", version = 0, logo = "")
 
-public class LobsterWebWalk extends Script {
+public class KaramFisher extends Script {
 
 	private FishInterpolation fishDelay = new FishInterpolation(random(20, 30), random(1800, 2300));
 
@@ -111,11 +111,11 @@ public class LobsterWebWalk extends Script {
 	// ============================================= fishingType
 	private void fishingType() {
 		if (getSkills().getStatic(Skill.FISHING) >= 1 && getSkills().getStatic(Skill.FISHING) < 5) {
-			levelFishType = KaramFishing.SMALLNET;
+			levelFishType = PlayerState.SMALLNET;
 		} else if (getSkills().getStatic(Skill.FISHING) >= 5 && getSkills().getStatic(Skill.FISHING) < 40) {
-			levelFishType = KaramFishing.BAIT;
+			levelFishType = PlayerState.BAIT;
 		} else if (getSkills().getStatic(Skill.FISHING) >= 40) {
-			levelFishType = KaramFishing.CAGE;
+			levelFishType = PlayerState.CAGE;
 		}
 	}
 
@@ -127,9 +127,9 @@ public class LobsterWebWalk extends Script {
 		} else if (levelFishType.getFishingAnim() == this.myPlayer().getAnimation()) {
 			return FishState.FISH; // Infinite loop to check for free fish in
 									// real time
-		} else if (getInventory().isFull() && levelFishType == KaramFishing.CAGE) {
+		} else if (getInventory().isFull() && levelFishType == PlayerState.CAGE) {
 			return FishState.LOBSFULL;
-		} else if (getInventory().isFull() && levelFishType != KaramFishing.CAGE) {
+		} else if (getInventory().isFull() && levelFishType != PlayerState.CAGE) {
 			return FishState.TRASHFULL;
 		} else {
 			return FishState.IDLE;
@@ -138,7 +138,7 @@ public class LobsterWebWalk extends Script {
 
 	// ============================================= Fishing begins!!!
 	private boolean freeFish(GroundItem fish) {
-		return getMap().canReach(fish) && fish != null && levelFishType == KaramFishing.CAGE;
+		return getMap().canReach(fish) && fish != null && levelFishType == PlayerState.CAGE;
 	}
 
 	private void beginFishing() throws InterruptedException {

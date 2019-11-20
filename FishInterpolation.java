@@ -1,6 +1,6 @@
 package com.fishing;
 
-public class FishInterpolation {
+public class FishInterpolation implements Runnable{
 
 	volatile static boolean canInteract = false;
 	boolean infiniteLoopCheck = true;

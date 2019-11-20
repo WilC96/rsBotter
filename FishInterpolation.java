@@ -1,4 +1,4 @@
-package com.swagFishing;
+package com.fishing;
 
 public class FishInterpolation {
 

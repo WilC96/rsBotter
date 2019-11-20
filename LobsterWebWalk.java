@@ -62,6 +62,7 @@ public class LobsterWebWalk extends Script {
 		if (!doWeHaveEverythingYet()) {
 			getNecessities();
 		}
+		// Check if we have enough money to make the fishing trip
 		if (getInventory().getAmount("Coins") <= 60) {
 			isPoor = true;
 			while (isPoor) {
@@ -91,15 +92,7 @@ public class LobsterWebWalk extends Script {
 		} else {
 			log("onLoop - Walking to fishing spot...");
 			this.walking.webWalk(KaramFishingSpot);
-			/*
-			 * new ConditionalSleep(1500, (int) (Math.random() * 500 + 250)) {
-			 * 
-			 * @Override public boolean condition() throws InterruptedException
-			 * { return KaramFishingSpot.contains(myPosition()); } }.sleep();
-			 */
-			Sleep.sleepUntil(() -> KaramFishingSpot.contains(myPosition()), (int) (Math.random() * 500 + 150));
-			// Change up the anonymous classes to lambdas using our Sleep class
-			// with BooleanSupplier
+			Sleep.sleepUntil(() -> KaramFishingSpot.contains(myPosition()), (int) (Math.random() * 500 + 150));	
 		}
 		log("We broke out the switch! Looping again...");
 		return random(200, 300);
@@ -233,7 +226,7 @@ public class LobsterWebWalk extends Script {
 
 		if (!getInventory().isEmpty() && getBank().depositAll()) {
 			log("getNecessities - Inventory contains items so deposit them all");
-			Sleep.sleepUntil(() -> getInventory().getEmptySlots() == 28, (int) (Math.random() * 500 + 150));
+			Sleep.sleepUntil(() -> getInventory().isEmpty(), (int) (Math.random() * 500 + 150));
 
 		}
 		withdrawMoney(); // Get that money!
@@ -274,7 +267,10 @@ public class LobsterWebWalk extends Script {
 		}
 
 		myTools.forEach(item -> {
-			bank.withdraw(item, 1);
+			if (item.equals("Fishing bait"))
+				bank.withdrawAll(item);
+			else
+				bank.withdraw(item, 1);
 			Sleep.sleepUntil(() -> getInventory().contains(item), (int) (Math.random() * 500 + 150));
 		});
 	}
@@ -284,10 +280,12 @@ public class LobsterWebWalk extends Script {
 		return DraynorBank.contains(this.myPosition());
 	}
 
-	// ============================================= Open bank with sleep to
-	// avoid spam clicking
+	// ============================================= Open bank
 	private void openBank() throws InterruptedException {
-		if (getBank().open())
+
+		RS2Object bank = getObjects().closest("Bank booth");
+
+		if (bank.exists() && bank != null && bank.interact("Bank"))
 			Sleep.sleepUntil(() -> getBank().isOpen(), (int) (Math.random() * 500 + 150));
 	}
 
@@ -325,20 +323,18 @@ public class LobsterWebWalk extends Script {
 
 	// ============================================= MONEY MAY ALL DAY
 	private boolean moneyMoneyMoneyTeeeam() throws InterruptedException {
-		if (getInventory().getAmount("Coins") < 60) {
-			if (DraynorBank.contains(this.myPosition())) {
-				if (!getBank().isOpen()) {
-					openBank();
-				}
-				if (getBank().isOpen()) {
-					getBank().withdrawAll("Coins");
-					Sleep.sleepUntil(() -> getInventory().getAmount("Coins") > 60, (int) (Math.random() * 500 + 150));
-
-				}
-			} else {
-				checkAtBank();
-				return isPoor = true;
+		if (checkAtBank()) {
+			if (!getBank().isOpen()) {
+				openBank();
 			}
+			if (getBank().isOpen()) {
+				withdrawMoney();
+
+			}
+		} else {
+			this.walking.webWalk(DraynorBank);
+			Sleep.sleepUntil(this::checkAtBank, (int) (Math.random() * 500 + 150));
+			return isPoor = true;
 		}
 		return isPoor = false;
 	}

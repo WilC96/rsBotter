@@ -1,4 +1,4 @@
-package com.fishing;
+package com.swagFishing;
 
 public class FishInterpolation {
 
@@ -14,7 +14,7 @@ public class FishInterpolation {
 
 	public void run() {
 		while (infiniteLoopCheck) {
-			while (LobsterWebWalk.hasInteracted == false) {
+			while (KaramFisher.hasInteracted == false) {
 				canInteract = true;
 				try {
 					Thread.sleep(randomTimer);
@@ -23,7 +23,7 @@ public class FishInterpolation {
 				}
 			}
 			canInteract = false;
-			LobsterWebWalk.hasInteracted = false;
+			KaramFisher.hasInteracted = false;
 			try {
 				Thread.sleep(delayTimer);
 			} catch (InterruptedException e) {

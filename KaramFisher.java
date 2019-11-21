@@ -19,7 +19,7 @@ import org.osbot.rs07.api.ui.Skill;
 import org.osbot.rs07.script.Script;
 import org.osbot.rs07.script.ScriptManifest;
 
-@ScriptManifest(author = "Glaciation96", info = "SecondAttempt", name = "KlobsterWebWalk", version = 0, logo = "")
+@ScriptManifest(author = "Glaciation96", info = "SecondAttempt", name = "KaramFisher2", version = 0, logo = "")
 
 public class KaramFisher extends Script {
 
@@ -37,7 +37,7 @@ public class KaramFisher extends Script {
 
 	private PlayerState levelFishType;
 	volatile static boolean hasInteracted = false;
-	boolean breakFishing = false, isPoor = false;
+	boolean breakFishing = false;
 	long currentlyIdledFor, lastActionTime;
 
 	public final String[] goods = { "Raw lobster", "Raw swordfish", "Lobster", "Swordfish" };
@@ -59,16 +59,16 @@ public class KaramFisher extends Script {
 		fishingType();
 
 		// Check for equipment depending on what we are fishing
-		if (!doWeHaveEverythingYet()) {
+		if (!doWeHaveEverythingYet())
 			getNecessities();
-		}
+
 		// Check if we have enough money to make the fishing trip
-		if (getInventory().getAmount("Coins") <= 60) {
-			isPoor = true;
-			while (isPoor) {
-				moneyMoneyMoneyTeeeam();
-			}
-		}
+		/*
+		 * if (getInventory().getAmount("Coins") <= 60) { isPoor = true; while (isPoor)
+		 * moneyMoneyMoneyTeeeam(); }
+		 */
+		while (tooPoor())
+			;
 		if (KaramFishingSpot.contains(myPosition())) {
 			breakFishing = false;
 			log("breakFishing = false");
@@ -76,7 +76,6 @@ public class KaramFisher extends Script {
 				switch (getFishState()) {
 				case FISH:
 					beginFishing();
-					Sleep.sleepUntil(() -> !myPlayer().isAnimating(), (int) (Math.random() * 500 + 150));
 					break;
 				case TRASHFULL:
 					dropTrash();
@@ -92,7 +91,7 @@ public class KaramFisher extends Script {
 		} else {
 			log("onLoop - Walking to fishing spot...");
 			this.walking.webWalk(KaramFishingSpot);
-			Sleep.sleepUntil(() -> KaramFishingSpot.contains(myPosition()), (int) (Math.random() * 500 + 150));	
+			Sleep.sleepUntil(() -> KaramFishingSpot.contains(myPosition()), (int) (Math.random() * 500 + 150));
 		}
 		log("We broke out the switch! Looping again...");
 		return random(200, 300);
@@ -101,42 +100,41 @@ public class KaramFisher extends Script {
 	// ============================================= Inventory check
 	public boolean doWeHaveEverythingYet() {
 		for (String item : levelFishType.getTool()) {
-			if (!inventory.contains(item)) {
+			if (!getInventory().contains(item))
 				return false;
-			}
 		}
 		return true;
 	}
 
-	// ============================================= fishingType
+	// ============================================= FishingType
 	private void fishingType() {
-		if (getSkills().getStatic(Skill.FISHING) >= 1 && getSkills().getStatic(Skill.FISHING) < 5) {
+		if (getSkills().getStatic(Skill.FISHING) >= 1 && getSkills().getStatic(Skill.FISHING) < 5)
 			levelFishType = PlayerState.SMALLNET;
-		} else if (getSkills().getStatic(Skill.FISHING) >= 5 && getSkills().getStatic(Skill.FISHING) < 40) {
+		else if (getSkills().getStatic(Skill.FISHING) >= 5 && getSkills().getStatic(Skill.FISHING) < 40)
 			levelFishType = PlayerState.BAIT;
-		} else if (getSkills().getStatic(Skill.FISHING) >= 40) {
+		else if (getSkills().getStatic(Skill.FISHING) >= 40)
 			levelFishType = PlayerState.CAGE;
-		}
 	}
 
 	// ============================================= Fishing states
 	private FishState getFishState() throws InterruptedException {
 		log("Getting fishState...");
-		if (!getInventory().isFull() && this.myPlayer().getAnimation() == -1) {
+		if (!getInventory().isFull() && this.myPlayer().getAnimation() == -1)
 			return FishState.FISH;
-		} else if (levelFishType.getFishingAnim() == this.myPlayer().getAnimation()) {
-			return FishState.FISH; // Infinite loop to check for free fish in
-									// real time
-		} else if (getInventory().isFull() && levelFishType == PlayerState.CAGE) {
+		else if (levelFishType.getFishingAnim() == this.myPlayer().getAnimation())
+			// Continuous looping to check for free fish
+			return FishState.FISH;
+		else if (getInventory().isFull() && levelFishType == PlayerState.CAGE)
 			return FishState.LOBSFULL;
-		} else if (getInventory().isFull() && levelFishType != PlayerState.CAGE) {
+		else if (getInventory().isFull() && levelFishType != PlayerState.CAGE)
 			return FishState.TRASHFULL;
-		} else {
+		else
 			return FishState.IDLE;
-		}
+
 	}
 
 	// ============================================= Fishing begins!!!
+
 	private boolean freeFish(GroundItem fish) {
 		return getMap().canReach(fish) && fish != null && levelFishType == PlayerState.CAGE;
 	}
@@ -156,16 +154,13 @@ public class KaramFisher extends Script {
 				log("beginFishing() - We are fishing!");
 
 				NPC fishingSpot = fishingSpot(levelFishType.getFishingSpot());
-				// Finds us the current closest fishing spot according to
-				// KaramFishings character check
+				// Finds us the current closest fishing spot
 
 				engageFishing(fishingSpot, levelFishType.getAction());
 				hasInteracted = true;
-				sleep(random(35, 50));
-			} else {
-				sleep(random(35, 50));
 			}
 		}
+		sleep(random(80, 100)); // Continuous looping interval
 	}
 
 	private void engageFishing(NPC fishingSpot, String action) {
@@ -214,28 +209,31 @@ public class KaramFisher extends Script {
 	}
 
 	// ============================================= Grabbing necessities
-	private void getNecessities() throws InterruptedException {
+	private void getNecessities() {
 		if (!checkAtBank()) {
+			log("getNecessities - Not at Draynor bank");
 			this.walking.webWalk(DraynorBank);
 			Sleep.sleepUntil(this::checkAtBank, (int) (Math.random() * 500 + 150));
 		}
 
-		log("getNecessities - At Draynor bank");
-		if (!getBank().isOpen())
+		if (!getBank().isOpen()) {
+			log("getNecessities - At Draynor bank");
 			openBank();
+		}
 
 		if (!getInventory().isEmpty() && getBank().depositAll()) {
 			log("getNecessities - Inventory contains items so deposit them all");
 			Sleep.sleepUntil(() -> getInventory().isEmpty(), (int) (Math.random() * 500 + 150));
 
 		}
-		withdrawMoney(); // Get that money!
-		withdrawTools(); // Get them tools!
+		withdrawMoney("getNecessities()"); // Get that money!
+		withdrawTools("getNecessities()"); // Get them tools!
 	}
 
 	// ============================================= Check for coins in bank
 	// (reusable)
-	public void withdrawMoney() {
+	public void withdrawMoney(String calledFrom) {
+		log("withdrawMoney() called from: " + calledFrom); // Testing purposes
 
 		// Stream bank items for coins if we have any or else exit the game
 		Item needMoney = Stream.of(bank.getItems()).filter(this::isMoney).findFirst().orElse(null);
@@ -252,7 +250,8 @@ public class KaramFisher extends Script {
 	}
 
 	// ============================================= Check for tools in bank
-	public void withdrawTools() {
+	public void withdrawTools(String calledFrom) {
+		log("withdrawTools() called from: " + calledFrom); // Testing purposes
 
 		// Check for tools availability
 		List<String> myTools = new ArrayList<>();
@@ -281,9 +280,12 @@ public class KaramFisher extends Script {
 	}
 
 	// ============================================= Open bank
-	private void openBank() throws InterruptedException {
-
+	private void openBank() {
+		log("Running openBank()");
 		RS2Object bank = getObjects().closest("Bank booth");
+
+		if (bank == null)
+			log("****************************** BANK IS NULL");
 
 		if (bank.exists() && bank != null && bank.interact("Bank"))
 			Sleep.sleepUntil(() -> getBank().isOpen(), (int) (Math.random() * 500 + 150));
@@ -316,27 +318,33 @@ public class KaramFisher extends Script {
 
 	// ============================================= Create fishing spot to call
 	private NPC fishingSpot(int id) {
-		// NPC fishingSpot = this.npcs.closest(id);
-		NPC fishingSpot = getNpcs().closest(id);
+		NPC fishingSpot = this.npcs.closest(id);
+		// NPC fishingSpot = getNpcs().closest(id);
 		return fishingSpot;
 	}
 
 	// ============================================= MONEY MAY ALL DAY
-	private boolean moneyMoneyMoneyTeeeam() throws InterruptedException {
+	private boolean moneyMoneyMoneyTeeeam() {
+		log("moneyMoneyMoneyTeeeam() is running");
+
 		if (checkAtBank()) {
 			if (!getBank().isOpen()) {
 				openBank();
 			}
 			if (getBank().isOpen()) {
-				withdrawMoney();
+				withdrawMoney("moneyMoneyMoneyTeeeam()");
 
 			}
 		} else {
 			this.walking.webWalk(DraynorBank);
 			Sleep.sleepUntil(this::checkAtBank, (int) (Math.random() * 500 + 150));
-			return isPoor = true;
 		}
-		return isPoor = false;
+		return tooPoor();
+	}
+
+	private boolean tooPoor() {
+		log("tooPoor() is running");
+		return (getInventory().getAmount("Coins") <= 60) ? moneyMoneyMoneyTeeeam() : false;
 	}
 
 	// ============================================= Check idle time
@@ -359,7 +367,7 @@ public class KaramFisher extends Script {
 		new Thread((Runnable) fishDelay).interrupt(); // Best practice?
 		log("Houston, we have a problem...");
 	}
-
+	
 	@Override
 	public void onPaint(Graphics2D g) {
 		Point mP = getMouse().getPosition();

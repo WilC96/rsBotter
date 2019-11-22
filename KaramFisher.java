@@ -64,8 +64,8 @@ public class KaramFisher extends Script {
 			getNecessities();
 
 		// Check if we have enough money to make the fishing trip
-		while (tooPoor())
-			;
+		while (tooPoor());
+		
 		if (KaramFishingSpot.contains(myPosition())) {
 			breakFishing = false;
 			log("breakFishing = false");

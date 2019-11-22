@@ -22,7 +22,8 @@ import org.osbot.rs07.script.ScriptManifest;
 @ScriptManifest(author = "Glaciation96", info = "SecondAttempt", name = "KaramFisher2", version = 0, logo = "")
 
 public class KaramFisher extends Script {
-
+	
+	// Stops the bot from spam clicking the fishing spot
 	private FishInterpolation fishDelay = new FishInterpolation(random(20, 30), random(1800, 2300));
 
 	// Places of interest for the bot to go

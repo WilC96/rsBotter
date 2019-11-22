@@ -64,10 +64,6 @@ public class KaramFisher extends Script {
 			getNecessities();
 
 		// Check if we have enough money to make the fishing trip
-		/*
-		 * if (getInventory().getAmount("Coins") <= 60) { isPoor = true; while (isPoor)
-		 * moneyMoneyMoneyTeeeam(); }
-		 */
 		while (tooPoor())
 			;
 		if (KaramFishingSpot.contains(myPosition())) {

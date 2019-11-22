@@ -43,9 +43,6 @@ public class KaramFisher extends Script {
 
 	public final String[] goods = { "Raw lobster", "Raw swordfish", "Lobster", "Swordfish" };
 	public final String[] trash = { "Raw sardine", "Raw herring", "Raw shrimps", "Raw anchovies" };
-	public final String[] SeamenOption = { "Yes please." };
-	public final String[] CustomsOptions = { "Can I journey on this ship?", "Search away, I have nothing to hide.",
-			"Ok." };
 
 	@Override
 	public void onStart() {
